@@ -9,7 +9,7 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.3" />
     <PackageReference Include="Dropbox.Api" Version="5.1.0" />
     <PackageReference Include="EPPlus" Version="5.4.0" />
-    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2098" />
+    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2105" />
     <PackageReference Include="Nemiro.OAuth.LoginForms" Version="1.7.0" />
   </ItemGroup>
 
