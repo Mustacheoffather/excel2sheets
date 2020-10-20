@@ -319,7 +319,7 @@ namespace excel2sheets
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
 
                 //add all the content from the List<Book> collection, starting at cell A1
-                worksheet.Cells["A1:Z"].LoadFromCollection(sb);
+                //worksheet.Cells["A1:A   "].LoadFromCollection(sb);
             }
         }
     }
