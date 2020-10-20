@@ -64,27 +64,35 @@ namespace excel2sheets
                     //Console.WriteLine("here3");
                     for (int i = worksheet.Dimension.Start.Row; i <= worksheet.Dimension.End.Row; i++)
                     {
-
+                        //if (worksheet.Row(i)==null)
+                        //{
+                          //  i++;
+                        //}
                         //Console.WriteLine("here2");
                         //a = worksheet.Dimension.End.Row;
                         for (int j = worksheet.Dimension.Start.Column; j <= worksheet.Dimension.End.Column; j++)
                         {
 
                             //Console.WriteLine("here1");
-                            if (worksheet.Cells[i, j].Value.ToString() != null)
+                            if (worksheet.Cells[i, j].Value == null)
                             {
+                                worksheet.Cells[i, j].Value = " ";
                                 //Console.WriteLine("here");
                                 //excelData.Add(String.Concat(i.ToString(), j.ToString()),
                                   //  new List<string> {worksheet.Cells[i, j].Value.ToString()});
                                 //Console.WriteLine(worksheet.Cells[i, j].Value);
                                 //var cell = w;
+                                
+
+                                //Console.WriteLine(cellsVal[i,j]);
+                            }
+                            else
+                            {
                                 cellsVal[i, j] = worksheet.Cells[i, j].Value.ToString();
                                 if (worksheet.Cells[i, j].Value.ToString() == null)
                                 {
                                     Console.WriteLine("null");
                                 }
-
-                                //Console.WriteLine(cellsVal[i,j]);
                             }
                         }
                     }
@@ -214,10 +222,10 @@ namespace excel2sheets
         {
             List<Request> requests = new List<Request>();
 
-            for (int i = 0; i < data.GetLength(0); i++)
+            for (int i = 1; i < data.GetLength(1); i++)
             {
                 List<CellData> values = new List<CellData>();
-                for (int j = 0; j < data.GetLength(1); j++)
+                for (int j = 1; j < data.GetLength(1); j++)
                 {
                     values.Add
                     (
@@ -239,7 +247,7 @@ namespace excel2sheets
                             Start = new GridCoordinate
                             {
                                 SheetId = 0,
-                                RowIndex = i,
+                                RowIndex = i-1,
                                 ColumnIndex = 0
                             },
 
