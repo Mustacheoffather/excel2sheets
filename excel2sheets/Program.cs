@@ -121,7 +121,7 @@ namespace excel2sheets
             //Console.ReadLine();
 
             Console.WriteLine(
-                "Введите директорию в которой хотите создать новый файл и название нового файла через слэш");
+                "Введите директорию в которой хотите создать новый файл и название нового файла через слэш и укажите расширение файла xls");
             string Directory = Console.ReadLine();
             SpreadsheetDocument spreadsheetDocument =
                 SpreadsheetDocument.Create(Directory, SpreadsheetDocumentType.Workbook);
