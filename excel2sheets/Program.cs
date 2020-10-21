@@ -26,16 +26,14 @@ namespace excel2sheets
 {
     class Program
     {
-        private static string ClientSecret = "credentials.json";
-        private static readonly string[] Scopes = {SheetsService.Scope.Spreadsheets};
-        private static readonly string ApplicationName = "excel2sheets";
-        private static string SpreadSheetId;
+        
         //private const string Range = "'Sheet1'!B1:B";
         //static int k = 0;
         //static int a = 0;
 
         static void Main(string[] args)
         {
+            Spreadsheet sSheet = new Spreadsheet();
             Console.WriteLine("Введите путь к файлу и название самого файла через слэш");
             string file = Console.ReadLine();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -102,16 +100,16 @@ namespace excel2sheets
             }
 
             Console.WriteLine("Введите ID вашей таблицы");
-            SpreadSheetId = Console.ReadLine();
+            sSheet.SpreadSheetId = Console.ReadLine();
 
             Console.WriteLine("Get Creds");
-            var credentials = GetCredential();
+            var credentials = sSheet.GetCredential();
 
             Console.WriteLine("Get service");
-            var service = GetService(credentials);
+            var service = sSheet.GetService(credentials);
 
             Console.WriteLine("Fill Data");
-            FillTheSpreadSheet(service, SpreadSheetId, cellsVal);
+            sSheet.FillTheSpreadSheet(service, sSheet.SpreadSheetId, cellsVal);
 
             //Console.WriteLine("Getting result");
             //string result = GetFirstCell(service, Range, SpreadSheetId);
@@ -121,7 +119,7 @@ namespace excel2sheets
             //Console.ReadLine();
 
             Console.WriteLine(
-                "Введите директорию в которой хотите создать новый файл и название нового файла через слэш и укажите расширение файла xls");
+                "Введите директорию в которой хотите создать новый файл и название нового файла через слэш и укажите расширение файла");
             string Directory = Console.ReadLine();
             SpreadsheetDocument spreadsheetDocument =
                 SpreadsheetDocument.Create(Directory, SpreadsheetDocumentType.Workbook);
@@ -135,143 +133,12 @@ namespace excel2sheets
             };
             sheets.Append(sheet);*/
 
-            FillNewFile(excelData);
+            FillNewFile(cellsVal);
         }
 
-        public static UserCredential GetCredential()
-        {
-            using (var stream = new FileStream(ClientSecret, FileMode.Open, FileAccess.Read))
-            {
-                var credPath = Path.Combine(Directory.GetCurrentDirectory(), "sheetsCreds.json");
+        
 
-                return GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)
-                ).Result;
-            }
-        }
-
-        public static SheetsService GetService(UserCredential credential)
-        {
-            return new SheetsService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName
-            });
-        }
-
-        /*private static void FillSpreadSheet(SheetsService service, string SpreadSheetId, /*Dictionary<string, List<string>> sb, int a, int k)
-        {
-            List<Request> requests = new List<Request>();
-            //Console.WriteLine(sb.Length);
-            List<CellData> values = new List<CellData>();
-            foreach (KeyValuePair<string, List<string>> keyValue in sb) 
-            {
-                if (Convert.ToInt32(keyValue.Key)%100 < (Convert.ToInt32(keyValue.Key) % 100)+1) 
-                {
-                    values.Add
-                    (
-                        new CellData
-                        {
-                             UserEnteredValue = new ExtendedValue
-                             {
-                                StringValue  = keyValue.Value.ToString()
-                             }
-                        }
-                    );
-                }
-            }
-                    
-            for(int i=0; i < k; i++)
-            {
-                requests.Add(
-                    new Request
-                    {
-                        UpdateCells = new UpdateCellsRequest
-                        {
-                            Start = new GridCoordinate
-                            {
-                                SheetId = 0,
-                                RowIndex = 0,
-                                ColumnIndex = i
-                            },
-
-                            Rows = new List<RowData> { 
-                                new RowData { 
-                                    Values= values
-                                } 
-                            },
-                            Fields = "UserEnteredValue"
-                        }
-                    }
-                );
-                Console.WriteLine(requests.ToString());
-            }
-
-            BatchUpdateSpreadsheetRequest busr = new BatchUpdateSpreadsheetRequest();
-
-            busr.Requests = requests;
-
-            service.Spreadsheets.BatchUpdate(busr, SpreadSheetId).Execute();
-        }*/
-
-        private static void FillTheSpreadSheet(SheetsService service, string SpreadSheetId, string[,] data)
-        {
-            List<Request> requests = new List<Request>();
-
-            for (int i = 1; i < data.GetLength(1); i++)
-            {
-                List<CellData> values = new List<CellData>();
-                for (int j = 1; j < data.GetLength(1); j++)
-                {
-                    values.Add
-                    (
-                        new CellData
-                        {
-                            UserEnteredValue = new ExtendedValue
-                            {
-                                StringValue = data[i, j]
-                            }
-                        }
-                    );
-                }
-
-                requests.Add(
-                    new Request
-                    {
-                        UpdateCells = new UpdateCellsRequest
-                        {
-                            Start = new GridCoordinate
-                            {
-                                SheetId = 0,
-                                RowIndex = i-1,
-                                ColumnIndex = 0
-                            },
-
-                            Rows = new List<RowData>
-                            {
-                                new RowData
-                                {
-                                    Values = values
-                                }
-                            },
-                            Fields = "UserEnteredValue"
-                        }
-                    }
-                );
-            }
-
-            BatchUpdateSpreadsheetRequest busr = new BatchUpdateSpreadsheetRequest();
-
-            busr.Requests = requests;
-
-            service.Spreadsheets.BatchUpdate(busr, SpreadSheetId).Execute();
-        }
-
-        private static string GetFirstCell(SheetsService service, string range, string SpreadSheetId)
+        /*private static string GetFirstCell(SheetsService service, string range, string SpreadSheetId)
         {
             SpreadsheetsResource.ValuesResource.GetRequest request =
                 service.Spreadsheets.Values.Get(SpreadSheetId, range);
@@ -293,10 +160,10 @@ namespace excel2sheets
                 {
                     if (value != null) return current + (" " + value[0]);
                     return null;
-                });*/
-        }
+                });
+        }*/
 
-        private static void FillNewFile(Dictionary<string, List<string>> sb)
+        private static void FillNewFile(string[,] data)
         {
             /*List<CellData> values = new List<CellData>();
             foreach (var i in sb)
@@ -318,8 +185,14 @@ namespace excel2sheets
                 //create a WorkSheet
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
 
-                //add all the content from the List<Book> collection, starting at cell A1
-                //worksheet.Cells["A1:A   "].LoadFromCollection(sb);
+                for (int i = worksheet.Dimension.Start.Row; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    for (int j = worksheet.Dimension.Start.Column; j <= worksheet.Dimension.End.Column; j++)
+                    {
+                        (worksheet.Cells[i, j].Value = data[i, j]).ToString();
+                    }
+                }
+
             }
         }
     }
