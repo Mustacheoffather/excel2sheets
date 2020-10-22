@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Google.Apis.Auth.OAuth2;
@@ -45,7 +46,7 @@ namespace excel2sheets
         {
             List<Request> requests = new List<Request>();
 
-            for (int i = 1; i < data.GetLength(1); i++)
+            for (int i = 1; i < data.GetLength(0); i++)
             {
                 List<CellData> values = new List<CellData>();
                 for (int j = 1; j < data.GetLength(1); j++)
@@ -61,6 +62,7 @@ namespace excel2sheets
                         }
                     );
                 }
+                //Console.WriteLine($"added \t{i} row");
 
                 requests.Add(
                     new Request

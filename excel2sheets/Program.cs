@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OfficeOpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml;
+using System.Timers;
 
 namespace excel2sheets
 {
@@ -32,25 +31,25 @@ namespace excel2sheets
             using (ExcelPackage excelPackage = new ExcelPackage(stream))
             {
                 var worksheet = excelPackage.Workbook.Worksheets.First(); //select sheet here
-
-                    for (int i = worksheet.Dimension.Start.Row; i <= worksheet.Dimension.End.Row; i++)
+                for (int i = worksheet.Dimension.Start.Row; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    //Console.WriteLine($"here \t{i}");
+                    for (int j = worksheet.Dimension.Start.Column; j <= worksheet.Dimension.End.Column; j++)
                     {
-                        for (int j = worksheet.Dimension.Start.Column; j <= worksheet.Dimension.End.Column; j++)
+                        if (worksheet.Cells[i, j].Value == null)
                         {
-                            if (worksheet.Cells[i, j].Value == null)
+                            worksheet.Cells[i, j].Value = " ";
+                        }
+                        else
+                        {
+                            cellsVal[i, j] = worksheet.Cells[i, j].Value.ToString();
+                            if (worksheet.Cells[i, j].Value.ToString() == null)
                             {
-                                worksheet.Cells[i, j].Value = " ";
-                            }
-                            else
-                            {
-                                cellsVal[i, j] = worksheet.Cells[i, j].Value.ToString();
-                                if (worksheet.Cells[i, j].Value.ToString() == null)
-                                {
-                                    Console.WriteLine("null");
-                                }
+                                Console.WriteLine("null");
                             }
                         }
                     }
+                }
             }
 
             Console.WriteLine("Введите ID вашей таблицы");
@@ -69,28 +68,38 @@ namespace excel2sheets
 
             Console.WriteLine(
                 "Введите директорию в которой хотите создать новый файл и название нового файла через слэш и укажите расширение файла");
-            string Directory = Console.ReadLine();
-            SpreadsheetDocument spreadsheetDocument =
-                SpreadsheetDocument.Create(Directory, SpreadsheetDocumentType.Workbook);
 
-            FillNewFile(cellsVal);
+            string Directory = Console.ReadLine();
+            
+            FileInfo fillFile = new FileInfo(Directory ?? string.Empty);
+            FillNewFile(cellsVal, Directory, totalRows, totalColumns);
+            Console.WriteLine("File was created");
+            
         }
         
-        private static void FillNewFile(string[,] data)
+        private static void FillNewFile(string[,] data, string Directory, int totalRows, int totalColumns)
         {
             using (ExcelPackage excelPackage = new ExcelPackage())
             {
-                //create a WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+                //Set some properties of the Excel document
+                excelPackage.Workbook.Properties.Author = "VDWWD";
+                excelPackage.Workbook.Properties.Title = "Title of Document";
+                excelPackage.Workbook.Properties.Subject = "EPPlus demo export data";
+                excelPackage.Workbook.Properties.Created = DateTime.Now;
 
-                for (int i = worksheet.Dimension.Start.Row; i <= worksheet.Dimension.End.Row; i++)
+                //Create the WorkSheet
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+                var worksheeet = excelPackage.Workbook.Worksheets.First();
+                for (int i = 1; i < totalRows; i++)
                 {
-                    for (int j = worksheet.Dimension.Start.Column; j <= worksheet.Dimension.End.Column; j++)
+                    for (int j = 1; j < totalColumns; j++)
                     {
-                        (worksheet.Cells[i, j].Value = data[i, j]).ToString();
+                        worksheet.Cells[i, j].Value = data[i,j];
                     }
                 }
-
+                
+                FileInfo fi = new FileInfo(Directory);
+                excelPackage.SaveAs(fi);
             }
         }
     }
