@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OfficeOpenXml;
-using System.Timers;
+//using System.Timers;
+//using System.Threading.Tasks;
 
 namespace excel2sheets
 {
     class Program
     { 
+        private static System.Timers.Timer aTimer;
         static void Main(string[] args)
         {
             Spreadsheet sSheet = new Spreadsheet();
@@ -65,26 +67,31 @@ namespace excel2sheets
             sSheet.FillTheSpreadSheet(service, sSheet.SpreadSheetId, cellsVal);
 
             Console.WriteLine("Done");
-
+            
             Console.WriteLine(
-                "Введите директорию в которой хотите создать новый файл и название нового файла через слэш и укажите расширение файла");
+                "Введите директорию в которой хотите создать новый файл и название нового файла через слэш и укажите расширение файла xlsx");
 
             string Directory = Console.ReadLine();
             
-            FileInfo fillFile = new FileInfo(Directory ?? string.Empty);
+            /*Timer timer = new Timer(5000);
+            timer.Elapsed += async ( sender, e ) => await UpdateNewFile();
+            timer.Start();
+            Console.Write("Press any key to exit... ");
+            Console.ReadKey();
+            timer.Stop();*/
+            
+            //FileInfo fillFile = new FileInfo(Directory ?? string.Empty);
             FillNewFile(cellsVal, Directory, totalRows, totalColumns);
             Console.WriteLine("File was created");
-            
         }
-        
         private static void FillNewFile(string[,] data, string Directory, int totalRows, int totalColumns)
         {
             using (ExcelPackage excelPackage = new ExcelPackage())
             {
                 //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = "VDWWD";
-                excelPackage.Workbook.Properties.Title = "Title of Document";
-                excelPackage.Workbook.Properties.Subject = "EPPlus demo export data";
+                excelPackage.Workbook.Properties.Author = "User";
+                excelPackage.Workbook.Properties.Title = " ";
+                excelPackage.Workbook.Properties.Subject = " ";
                 excelPackage.Workbook.Properties.Created = DateTime.Now;
 
                 //Create the WorkSheet
