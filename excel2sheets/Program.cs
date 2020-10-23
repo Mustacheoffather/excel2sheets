@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OfficeOpenXml;
-//using System.Timers;
-//using System.Threading.Tasks;
 
 namespace excel2sheets
 {
@@ -32,10 +30,10 @@ namespace excel2sheets
             using (MemoryStream stream = new MemoryStream(bin))
             using (ExcelPackage excelPackage = new ExcelPackage(stream))
             {
-                var worksheet = excelPackage.Workbook.Worksheets.First(); //select sheet here
+                var worksheet = excelPackage.Workbook.Worksheets.First(); 
                 for (int i = worksheet.Dimension.Start.Row; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    //Console.WriteLine($"here \t{i}");
+                    
                     for (int j = worksheet.Dimension.Start.Column; j <= worksheet.Dimension.End.Column; j++)
                     {
                         if (worksheet.Cells[i, j].Value == null)
@@ -73,14 +71,6 @@ namespace excel2sheets
 
             string Directory = Console.ReadLine();
             
-            /*Timer timer = new Timer(5000);
-            timer.Elapsed += async ( sender, e ) => await UpdateNewFile();
-            timer.Start();
-            Console.Write("Press any key to exit... ");
-            Console.ReadKey();
-            timer.Stop();*/
-            
-            //FileInfo fillFile = new FileInfo(Directory ?? string.Empty);
             FillNewFile(cellsVal, Directory, totalRows, totalColumns);
             Console.WriteLine("File was created");
         }
